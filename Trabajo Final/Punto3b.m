@@ -14,16 +14,7 @@ h = (b-a)/M; k =(bt-at)/4;
 x = a+(0:M)*h;
 t = at+(0:N)*k;
 A = zeros(mn,mn); b= zeros(mn,1);
-for i=2:m-1
-    for j=2:n-1
-     A(i+(j-1)*m, i-1+(j-1)*m) = 1/(h^2);
-     A(i+(j-1)*m, i+1+(j-1)*m) = 1/(h^2);
-     A(i+(j-1)*m, i+(j-1)*m) = -3/h^2-2/k^2;
-     A(i+(j-1)*m, i+(j-2)*m) = 1/(k^2);
-     A(i+(j-1)*m, i+j*m) = 1/(k^2);
-     b(i+(j-1)*m)=f(x(i),t(j));
-    end
-end
+
 for i=1:m
     j =1;
     A(i+(j-1)*m, i+(j-1)*m) = 1;
@@ -39,6 +30,17 @@ for j=2:n-1
     i = m;
     A(i+(j-1)*m, i+(j-1)*m) = 1;
     b(i+(j-1)*m) = g4(t(j));
+end
+
+for i=2:m-1
+    for j=2:n-1
+     A(i+(j-1)*m, i-1+(j-1)*m) = 1/(h^2);
+     A(i+(j-1)*m, i+1+(j-1)*m) = 1/(h^2);
+     A(i+(j-1)*m, i+(j-1)*m) = -3/h^2-2/k^2;
+     A(i+(j-1)*m, i+(j-2)*m) = 1/(k^2);
+     A(i+(j-1)*m, i+j*m) = 1/(k^2);
+     b(i+(j-1)*m)=f(x(i),t(j));
+    end
 end
 v=A\b
 w=reshape(v(1:mn),m,n);
