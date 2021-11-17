@@ -10,10 +10,12 @@ g2 = @(x)-2*exp(-x);
 g3 = @(t)exp(-2*t);
 g4 = @(t)exp(-1-2*t);
 m =M+1; n=N+1; mn = m*n;
-h = (b-a)/M; k =(bt-at)/4; 
+h = (b-a)/M; 
+k =(bt-at)/4; 
 x = a+(0:M)*h;
 t = at+(0:N)*k;
-A = zeros(mn,mn); b= zeros(mn,1);
+A = zeros(mn,mn); 
+b= zeros(mn,1);
 
 for i=1:m
     j =1;
