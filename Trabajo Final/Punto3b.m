@@ -44,4 +44,14 @@ for i=2:m-1
 end
 v=A\b
 w=reshape(v(1:mn),m,n);
-mesh(x,t,w)
+surf(x,t,w)
+
+%%Solución real
+ur = @(x,t) exp(-x-2*t);
+u = zeros(m,n);
+for i=1:m
+    for j=1:n
+        u(i,j) = ur(x(i),t(j));
+    end
+end
+surf(x,t,u)
