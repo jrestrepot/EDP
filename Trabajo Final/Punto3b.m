@@ -5,7 +5,8 @@ g = @(x)-2*exp(-x);
 l = @(t)exp(-2*t);
 r = @(t) exp(-1-2*t);
 h = 1/m;
-k = h/(c*2); %Así nos aseguramos de que sea estable
+k = h/(c*2); 
+sigma = c*k/h;
 n = round(1/k);
 a = 0;
 b =1;
@@ -15,8 +16,7 @@ X = a+(0:m)*h; %Vector de xs
 T = b+(0:n)*k; %Vector de ts
 M = m+1;
 N = n+1;
-A = diag((2-2*(sigma^2))*ones(1,M)) + diag((sigma^2)*ones(1,M-1),-1)+ diag((sigma^2)*ones(1,M-1),1);
-
+A = diag((2-2*(sigma^2))*ones(1,M)) + diag((sigma^2)*ones(1,M-1),-1)+ diag((sigma^2)*ones(1,M-1),1); %Matriz tridiagonal
 Fx = ones(M,1);
 Gx = ones(M,1);
 T0 = zeros(M,1);
@@ -33,20 +33,18 @@ W1 = (1/2)*A*Fx +k*Gx+(sigma^2)/2*T0;
 Wij = ones(M,N);
 Wij(:,1) = W0;
 Wij(:,2) = W1;
-
 for i=3:N
     for j=2:M
         T0(1)= l(T(j-1));
         T0(M)= r(T(j-1));
     end
-    Wij = A*Wij(:,i-1)-Wij(:,i-2)+sigma^2*T0;
+    W = A*Wij(:,i-1)-Wij(:,i-2)+sigma^2*T0;
 end
 
-surf(X,T,Wij)
 
 %%Solución real
 ur = @(x,t) exp(-x-2*t);
-u = zeros(m,n);
+u = zeros(M,N);
 for i=1:M
     for j=1:N
         u(i,j) = ur(X(i),T(j));
