@@ -1,59 +1,55 @@
-M = 20;
-N = 20;
+c = 2;
+m = 2;
+f = @(x)exp(-x);
+g = @(x)-2*exp(-x);
+l = @(t)exp(-2*t);
+r = @(t) exp(-1-2*t);
+h = 1/m;
+k = h/(c*2); %Así nos aseguramos de que sea estable
+n = round(1/k);
 a = 0;
-b = 1;
+b =1;
 at = 0;
 bt = 1;
-dd = @(x,t)4*exp(-x-2*t); %Segunda derivdada de u
-f = @(x)exp(-x); %Condicion inicial
-g= @(x)-2*exp(-x); %Condicion inicial
-l = @(t)exp(-2*t); %Condicion de frontera
-r = @(t)exp(-1-2*t); %Condicion de frontera
-m =M+1; n=N+1; mn = m*n;
-h = (b-a)/M; 
-k =(bt-at)/4; 
-x = a+(0:M)*h;
-t = at+(0:N)*k;
-A = zeros(mn,mn); 
-b= zeros(mn,1);
+X = a+(0:m)*h; %Vector de xs
+T = b+(0:n)*k; %Vector de ts
+M = m+1;
+N = n+1;
+A = diag((2-2*(sigma^2))*ones(1,M)) + diag((sigma^2)*ones(1,M-1),-1)+ diag((sigma^2)*ones(1,M-1),1);
 
-for i=1:m
-    j =1;
-    A(i+(j-1)*m, i+(j-1)*m) = 1;
-    b(i+(j-1)*m) = f(x(i));
-    j=n;
-    A(i+(j-1)*m, i+(j-1)*m)=1;
-    b(i+(j-1)*m) = g(x(i));
-end
-for j=2:n-1
-    i =1;
-    A(i+(j-1)*m, i+(j-1)*m) = 1;
-    b(i+(j-1)*m) = l(t(j));
-    i = m;
-    A(i+(j-1)*m, i+(j-1)*m) = 1;
-    b(i+(j-1)*m) = r(t(j));
+Fx = ones(M,1);
+Gx = ones(M,1);
+T0 = zeros(M,1);
+T0(1) = l(0);
+T0(M) = r(0);
+
+for i=1:M
+   Fx(i,1) = f(X(i)); 
+   Gx(i,1) = g(X(i));
 end
 
-for i=2:m-1
-    for j=2:n-1
-     A(i+(j-1)*m, i-1+(j-1)*m) = 1/(h^2);
-     A(i+(j-1)*m, i+1+(j-1)*m) = 1/(h^2);
-     A(i+(j-1)*m, i+(j-1)*m) = -3/h^2-2/k^2;
-     A(i+(j-1)*m, i+(j-2)*m) = 1/(k^2);
-     A(i+(j-1)*m, i+j*m) = 1/(k^2);
-     b(i+(j-1)*m)=dd(x(i),t(j));
+W0 = Fx;
+W1 = (1/2)*A*Fx +k*Gx+(sigma^2)/2*T0;
+Wij = ones(M,N);
+Wij(:,1) = W0;
+Wij(:,2) = W1;
+
+for i=3:N
+    for j=2:M
+        T0(1)= l(T(j-1));
+        T0(M)= r(T(j-1));
     end
+    Wij = A*Wij(:,i-1)-Wij(:,i-2)+sigma^2*T0;
 end
-v=A\b
-w=reshape(v(1:mn),m,n);
-surf(x,t,w)
+
+surf(X,T,Wij)
 
 %%Solución real
 ur = @(x,t) exp(-x-2*t);
 u = zeros(m,n);
-for i=1:m
-    for j=1:n
-        u(i,j) = ur(x(i),t(j));
+for i=1:M
+    for j=1:N
+        u(i,j) = ur(X(i),T(j));
     end
 end
-surf(x,t,u)
+surf(X,T,u)
